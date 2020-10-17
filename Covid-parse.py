@@ -8,6 +8,7 @@
 import urllib.request, urllib.parse, urllib.error
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
+import csv
 import ssl
 
 # Ignore SSL certificate errors
@@ -20,12 +21,21 @@ url = 'https://www.gov.uk/guidance/full-list-of-local-covid-alert-levels-by-area
 html = urlopen(url, context=ctx).read()
 soup = BeautifulSoup(html, "html.parser")
 
+# setup csv
+file = open('Covid_level.csv', 'w')
+writer = csv.writer(file)
+# row header
+writer.writerow(['Covid_level'])
+
 
 # subset the correct div "govspeak"
-# this is not needed but it helps reduce the chance of
-# the sting being repeated elsewhere in the html
+# this is not needed but it helps reduce the chance of the sting being repeated elsewhere in the html
 div = soup.find("div", {"class": "govspeak"})
 
 # subset by finding the tag 'name'
 for name in div.find_all(["h2", "h3"]):
-    print(name.contents[0])
+    name = name.contents[0]
+    print(name)
+    writer.writerow([name])
+
+file.close()
